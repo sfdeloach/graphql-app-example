@@ -22,6 +22,7 @@ const BookType = new GraphQLObjectType({
         let result = await db
           .collection('authors')
           .findOne({ _id: new ObjectId(parent.author_id) });
+        console.table(result);
         return result;
       }
     }
@@ -37,9 +38,11 @@ const AuthorType = new GraphQLObjectType({
     books: {
       type: new GraphQLList(BookType),
       resolve: async (parent, args) => {
-        //return books.filter(book => book.authorID === parent.id);
-        let result = await db.collection('books').find({ author_id: parent._id });
-        console.log(result);
+        let result = await db
+          .collection('books')
+          .find({ author_id: parent._id.toString() })
+          .toArray();
+        console.table(result);
         return result;
       }
     }
@@ -70,7 +73,7 @@ const RootQuery = new GraphQLObjectType({
     books: {
       type: new GraphQLList(BookType),
       resolve: async (parent, args) => {
-        let result = await db.collection('books').find({});
+        let result = await db.collection('books').find({}).toArray();
         console.log(`[${new Date().toLocaleTimeString()}] query all books`);
         return result;
       }
@@ -78,7 +81,7 @@ const RootQuery = new GraphQLObjectType({
     authors: {
       type: new GraphQLList(AuthorType),
       resolve: async (parent, args) => {
-        let result = await db.collection('authors').find({});
+        let result = await db.collection('authors').find({}).toArray();
         console.log(`[${new Date().toLocaleTimeString()}] query all authors`);
         return result;
       }
@@ -96,7 +99,7 @@ const Mutation = new GraphQLObjectType({
         age: { type: GraphQLInt }
       },
       resolve: async (parent, args) => {
-        let collection = await db.collection('authors');
+        let collection = db.collection('authors');
         let newDocument = { name: args.name, age: args.age };
         let result = await collection.insertOne(newDocument);
 
@@ -117,7 +120,7 @@ const Mutation = new GraphQLObjectType({
         author_id: { type: GraphQLID }
       },
       resolve: async (parent, args) => {
-        let collection = await db.collection('books');
+        let collection = db.collection('books');
         let newDocument = { name: args.name, genre: args.genre, author_id: args.author_id };
         let result = await collection.insertOne(newDocument);
 
