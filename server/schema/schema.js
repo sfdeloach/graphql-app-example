@@ -1,3 +1,5 @@
+import db from '../conn.mjs';
+import { ObjectId } from 'mongodb';
 import {
   GraphQLObjectType,
   GraphQLString,
@@ -26,10 +28,9 @@ let authors = [
 const BookType = new GraphQLObjectType({
   name: 'Book',
   fields: () => ({
-    id: { type: GraphQLID },
+    _id: { type: GraphQLID },
     name: { type: GraphQLString },
     genre: { type: GraphQLString },
-    authorID: { type: GraphQLID },
     author: {
       type: AuthorType,
       resolve: (parent, args) => {
@@ -43,7 +44,7 @@ const BookType = new GraphQLObjectType({
 const AuthorType = new GraphQLObjectType({
   name: 'Author',
   fields: () => ({
-    id: { type: GraphQLID },
+    _id: { type: GraphQLID },
     name: { type: GraphQLString },
     age: { type: GraphQLInt },
     books: {
@@ -57,22 +58,26 @@ const AuthorType = new GraphQLObjectType({
 });
 
 const RootQuery = new GraphQLObjectType({
-  name: 'RootQueryType',
+  name: 'RootQuery',
   fields: {
     book: {
       type: BookType,
-      args: { id: { type: GraphQLID } },
-      resolve: (parent, args) => {
-        // code to get data from db/other source
-        return books.find(book => book.id === args.id);
+      args: { _id: { type: GraphQLID } },
+      resolve: async (parent, args) => {
+        let collection = await db.collection('books');
+        let result = await collection.findOne({ _id: args._id });
+        console.log(`[${new Date().toLocaleTimeString()}] query book`);
+        return result;
       }
     },
     author: {
       type: AuthorType,
-      args: { id: { type: GraphQLID } },
-      resolve: (parent, args) => {
-        // code to get data from db/other source
-        return authors.find(author => author.id === args.id);
+      args: { _id: { type: GraphQLID } },
+      resolve: async (parent, args) => {
+        let collection = await db.collection('authors');
+        let result = await collection.findOne({ _id: new ObjectId(args._id) });
+        console.log(`[${new Date().toLocaleTimeString()}] query author`);
+        return result;
       }
     },
     books: {
@@ -97,8 +102,35 @@ const RootQuery = new GraphQLObjectType({
   }
 });
 
+const Mutation = new GraphQLObjectType({
+  name: 'Mutation',
+  fields: {
+    addAuthor: {
+      type: AuthorType,
+      args: {
+        name: { type: GraphQLString },
+        age: { type: GraphQLInt }
+      },
+      resolve: async (parent, args) => {
+        let collection = await db.collection('authors');
+        let newDocument = { name: args.name, age: args.age };
+        let result = await collection.insertOne(newDocument);
+
+        if (result.acknowledged) {
+          console.log(`[${new Date().toLocaleTimeString()}] added author`);
+          return await collection.findOne({ _id: result.insertedId });
+        } else {
+          console.error(result);
+        }
+      }
+    }
+    // TODO: addBook, update, and delete, (insertMany and deleteAll for testing)
+  }
+});
+
 const schema = new GraphQLSchema({
-  query: RootQuery
+  query: RootQuery,
+  mutation: Mutation
 });
 
 export default schema;

@@ -9,3 +9,8 @@ is codebase is not exactly the same as provided in the tutorial:
 - [Postman](https://www.postman.com/) was used to test the API instead of using
   [graphiql](https://github.com/graphql/graphiql)
 - ES Modules were used instead of CommonJS Modules
+- [MongoDB Atlas](https://www.mongodb.com/) was used in place of the now defunct
+  [mLab](https://en.wikipedia.org/wiki/MLab)
+- [mongoose](https://npmjs.com/package/mongoose) was not used. The native MongoDB driver was
+  sufficient for this project.
+- [vite](https://vitejs.dev/) was used instead of [create react app](https://create-react-app.dev/)
