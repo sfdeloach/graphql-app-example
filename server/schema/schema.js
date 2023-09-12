@@ -1,12 +1,13 @@
 import db from '../conn.mjs';
 import { ObjectId } from 'mongodb';
 import {
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLSchema,
   GraphQLID,
   GraphQLInt,
-  GraphQLList
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLSchema,
+  GraphQLString
 } from 'graphql';
 
 const BookType = new GraphQLObjectType({
@@ -22,7 +23,6 @@ const BookType = new GraphQLObjectType({
         let result = await db
           .collection('authors')
           .findOne({ _id: new ObjectId(parent.author_id) });
-        console.table(result);
         return result;
       }
     }
@@ -42,7 +42,6 @@ const AuthorType = new GraphQLObjectType({
           .collection('books')
           .find({ author_id: parent._id.toString() })
           .toArray();
-        console.table(result);
         return result;
       }
     }
@@ -95,7 +94,7 @@ const Mutation = new GraphQLObjectType({
     addAuthor: {
       type: AuthorType,
       args: {
-        name: { type: GraphQLString },
+        name: { type: new GraphQLNonNull(GraphQLString) },
         age: { type: GraphQLInt }
       },
       resolve: async (parent, args) => {
@@ -103,34 +102,34 @@ const Mutation = new GraphQLObjectType({
         let newDocument = { name: args.name, age: args.age };
         let result = await collection.insertOne(newDocument);
 
-        if (result.acknowledged) {
-          console.log(`[${new Date().toLocaleTimeString()}] added author`);
-          return await collection.findOne({ _id: result.insertedId });
-        } else {
+        if (!result.acknowledged) {
           console.error(result);
           return result;
         }
+
+        console.log(`[${new Date().toLocaleTimeString()}] added author`);
+        return await collection.findOne({ _id: result.insertedId });
       }
     },
     addBook: {
       type: BookType,
       args: {
-        name: { type: GraphQLString },
-        genre: { type: GraphQLString },
-        author_id: { type: GraphQLID }
+        name: { type: new GraphQLNonNull(GraphQLString) },
+        genre: { type: new GraphQLNonNull(GraphQLString) },
+        author_id: { type: new GraphQLNonNull(GraphQLID) }
       },
       resolve: async (parent, args) => {
         let collection = db.collection('books');
         let newDocument = { name: args.name, genre: args.genre, author_id: args.author_id };
         let result = await collection.insertOne(newDocument);
 
-        if (result.acknowledged) {
-          console.log(`[${new Date().toLocaleTimeString()}] added book`);
-          return await collection.findOne({ _id: result.insertedId });
-        } else {
+        if (!result.acknowledged) {
           console.error(result);
           return result;
         }
+
+        console.log(`[${new Date().toLocaleTimeString()}] added book`);
+        return await collection.findOne({ _id: result.insertedId });
       }
     }
     // TODO: update, and delete, (insertMany and deleteAll for testing)
