@@ -14,3 +14,5 @@ is codebase is not exactly the same as provided in the tutorial:
 - [mongoose](https://npmjs.com/package/mongoose) was not used. The native MongoDB driver was
   sufficient for this project.
 - [vite](https://vitejs.dev/) was used instead of [create react app](https://create-react-app.dev/)
+- [apollo](https://github.com/apollographql/apollo-tooling) was not used, HTTP requests were made
+  using the standard [fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
