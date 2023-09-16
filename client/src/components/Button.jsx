@@ -1,7 +1,7 @@
-function Button({ disabled, onClick, value }) {
+function Button({ isDisabled, onClick, value }) {
   return (
     <div>
-      <input disabled={disabled} onClick={onClick} type='button' value={value} />
+      <input disabled={isDisabled} onClick={onClick} type='button' value={value} />
     </div>
   );
 }

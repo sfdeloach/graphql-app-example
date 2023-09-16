@@ -104,9 +104,9 @@ function Form({ authors, refreshBooks }) {
           value={book.author_id}
         />
         <Button
-          disabled={status === STATE.submitting || !book.name || !book.genre || !book.author_id}
+          isDisabled={status === STATE.submitting || !book.name || !book.genre || !book.author_id}
           onClick={handleAddBook}
-          value='Add Book'
+          value='+'
         />
       </form>
     </>
