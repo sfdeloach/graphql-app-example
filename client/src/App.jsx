@@ -1,3 +1,4 @@
+import BookDetail from './components/BookDetail';
 import BookList from './components/BookList';
 import Form from './components/Form';
 import { useState, useEffect } from 'react';
@@ -7,15 +8,14 @@ function App() {
   const [authors, setAuthors] = useState([]);
   const [books, setBooks] = useState([]);
   const [bookDetail, setBookDetail] = useState();
-  const [newestBook, setNewestBook] = useState();
+  const [newBook, setNewBook] = useState();
 
   function handleBookClick(book) {
-    console.log(book);
     setBookDetail(book);
   }
 
-  function refreshBooks(id) {
-    setNewestBook(id);
+  function refreshData(book_id) {
+    setNewBook(book_id);
   }
 
   useEffect(() => {
@@ -33,7 +33,7 @@ function App() {
       .then(result => {
         setBooks(result.data.books);
       });
-  }, [newestBook]);
+  }, [newBook]);
 
   useEffect(() => {
     fetch('http://localhost:4000/graphql', {
@@ -50,24 +50,14 @@ function App() {
       .then(result => {
         setAuthors(result.data.authors);
       });
-  }, []);
+  }, [newBook]);
 
   return (
     <>
       <h1>Reading List</h1>
       <BookList books={books} onClick={handleBookClick} />
-      <Form authors={authors} refreshBooks={refreshBooks} />
-      <div>
-        <h2>Book Title</h2>
-        <h3>genre goes here</h3>
-        <h3>author name here</h3>
-        <h3>All books by this author:</h3>
-        <ul>
-          <li>Book one</li>
-          <li>Book two</li>
-          <li>Book three</li>
-        </ul>
-      </div>
+      <Form authors={authors} refreshBooks={refreshData} />
+      <BookDetail authors={authors} bookDetail={bookDetail} />
     </>
   );
 }
