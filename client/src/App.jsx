@@ -3,6 +3,7 @@ import BookList from './components/BookList';
 import Form from './components/Form';
 import { useState, useEffect } from 'react';
 import { getAuthors, getBooks } from './graphql/queries';
+import { COLORS } from './styles';
 
 function App() {
   const [authors, setAuthors] = useState([]);
@@ -54,9 +55,18 @@ function App() {
 
   return (
     <>
-      <h1>Reading List</h1>
-      <BookList books={books} onClick={handleBookClick} />
-      <Form authors={authors} refreshBooks={refreshData} />
+      <div
+        style={{
+          background: COLORS.light,
+          color: COLORS.dark,
+          flexGrow: 1,
+          minHeight: '100vh',
+          paddingLeft: '1rem'
+        }}>
+        <h1 style={{ color: COLORS.primary }}>Ninja's (Updated) Reading List</h1>
+        <BookList books={books} onClick={handleBookClick} />
+        <Form authors={authors} refreshBooks={refreshData} />
+      </div>
       <BookDetail authors={authors} bookDetail={bookDetail} />
     </>
   );

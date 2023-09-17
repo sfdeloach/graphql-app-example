@@ -1,8 +1,10 @@
+import { COLORS } from '../styles';
+
 function BookDetail({ authors, bookDetail }) {
   let content;
 
   if (!bookDetail) {
-    content = 'No book selected...';
+    content = <h3>No book selected...</h3>;
   } else {
     const moreBooks = authors.filter(author => author._id === bookDetail.author._id)[0].books;
 
@@ -21,7 +23,19 @@ function BookDetail({ authors, bookDetail }) {
     );
   }
 
-  return <div>{content}</div>;
+  return (
+    <div
+      style={{
+        background: `linear-gradient(${COLORS.secondary}, ${COLORS.primary})`,
+        color: COLORS.light,
+        flexGrow: 1,
+        minHeight: `100vh`,
+        minWidth: '40vw',
+        paddingLeft: '1rem'
+      }}>
+      {content}
+    </div>
+  );
 }
 
 export default BookDetail;
