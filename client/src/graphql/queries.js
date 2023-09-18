@@ -14,14 +14,14 @@ query Books {
 
 export const getAuthors = `
 query Authors {
-    authors {
-        _id
-        name
-        age
-        books {
-            _id
-            name
-            genre
-        }
+  authors {
+    _id
+    name
+    age
+    books {
+      _id
+      name
+      genre
     }
+  }
 }`;

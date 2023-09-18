@@ -3,22 +3,12 @@ import { createHandler } from 'graphql-http/lib/use/express';
 import schema from './schema/schema.js';
 import cors from 'cors';
 
+const url = 'http://localhost:5173'; // only process requests from this url
 const app = express();
 
-const corsOptions = {
-  origin: '*',
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  accessControlAllowOrigin: '*',
-  accessControlAllowCredentials: true
-};
-
-app.use(cors(corsOptions));
-
+app.use(cors({ origin: url }));
 app.use('/graphql', createHandler({ schema }));
 
 app.listen(4000, () => {
   console.log(`[${new Date().toLocaleTimeString()}] server listening`);
 });
-
-// TODO: https://www.codeconcisely.com/posts/graceful-shutdown-in-express/
-// TODO: close mongoDB: await client.close();
